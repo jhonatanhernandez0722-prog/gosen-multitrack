@@ -1,0 +1,51 @@
+appId: com.gosen.multitrack
+productName: Gosen Multitrack
+copyright: Gosen
+directories:
+  output: dist
+  buildResources: build
+files:
+  - out/**
+  - "!out/main/selftest.js"
+  - package.json
+asar: true
+
+# --- Windows ---------------------------------------------------------------
+win:
+  icon: build/icon.ico
+  target:
+    - target: nsis
+      arch: [x64]
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Gosen Multitrack
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+  # Nunca borrar la configuración ni la biblioteca del usuario al desinstalar.
+  deleteAppDataOnUninstall: false
+  artifactName: Gosen-Multitrack-Setup-${version}.${ext}
+
+# --- macOS (solo se puede compilar en un Mac o en GitHub Actions) ------------
+mac:
+  icon: build/icon.png
+  category: public.app-category.music
+  # "universal": un solo archivo que funciona en Macs con chip Apple (M1/M2/M3…) y con Intel.
+  target:
+    - target: dmg
+      arch: [universal]
+  # Sin certificado de Apple Developer: firma ad-hoc ("-"). Es imprescindible para que arranque en
+  # Macs con chip Apple. Para distribuir sin avisos de Gatekeeper hace falta un certificado
+  # "Developer ID Application" + notarización (cambiar identity y activar hardenedRuntime/notarize).
+  identity: "-"
+  hardenedRuntime: false
+  artifactName: Gosen-Multitrack-${version}-mac.${ext}
+dmg:
+  title: Gosen Multitrack ${version}
+  artifactName: Gosen-Multitrack-${version}-mac.${ext}
+
+# Actualizaciones futuras: configurar `publish` (GitHub Releases o servidor propio) y añadir electron-updater.
+publish: null

@@ -1,0 +1,68 @@
+# Compila y prueba Gosen Multitrack en macOS y Windows.
+# Se ejecuta a mano (pestaña Actions → "Build" → Run workflow) o al subir una etiqueta v*.
+# Los instaladores quedan como "Artifacts" descargables en el resumen de la ejecución.
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            target: --mac
+            artifacts: dist/*.dmg
+          - os: windows-latest
+            target: --win
+            artifacts: dist/*.exe
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Comprobar tipos
+        run: npm run typecheck
+
+      - name: Compilar
+        run: npx electron-vite build
+
+      # Prueba de integración real en cada sistema: importación ZIP, biblioteca, reproducción,
+      # medidores y sincronización con un servidor que imita la API oficial de Holyrics.
+      - name: Autoprueba
+        shell: bash
+        run: |
+          python scripts/make-fixtures.py
+          npx electron out/main/selftest.js
+
+      - name: Capturas de la autoprueba
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: capturas-${{ matrix.os }}
+          path: test-output/
+          if-no-files-found: ignore
+
+      - name: Crear instalador
+        run: npx electron-builder ${{ matrix.target }} --publish never
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gosen-multitrack-${{ matrix.os }}
+          path: ${{ matrix.artifacts }}

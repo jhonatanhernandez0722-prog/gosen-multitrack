@@ -1,0 +1,40 @@
+{
+  "name": "gosen-multitrack",
+  "productName": "Gosen Multitrack",
+  "version": "0.1.0",
+  "description": "Reproductor multipista local para servicios de iglesia, con integración Holyrics.",
+  "author": "Gosen",
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "./out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
+    "fixtures": "python scripts/make-fixtures.py",
+    "selftest": "electron-vite build && electron out/main/selftest.js",
+    "dist:win": "npm run typecheck && electron-vite build && electron-builder --win -c.electronDist=node_modules/electron/dist",
+    "dist:mac": "npm run typecheck && electron-vite build && electron-builder --mac"
+  },
+  "dependencies": {
+    "yauzl": "^3.4.0"
+  },
+  "devDependencies": {
+    "@fontsource/barlow": "^5.3.0",
+    "@fontsource/barlow-condensed": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@types/node": "^26.6.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/yauzl": "^3.4.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "electron": "^44.5.1",
+    "electron-builder": "^26.15.3",
+    "electron-vite": "^5.0.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.2"
+  }
+}
